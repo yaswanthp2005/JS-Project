@@ -1,0 +1,61 @@
+/* Task 6 calculator styles per todo.txt */
+html,body{
+  height:100%;
+}
+body{
+  font-family: Helvetica, Arial, sans-serif;
+  background: #ecf0f1;
+  color: #2d2d2d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+}
+.calculator{
+  background: snow;
+  padding:20px;
+  border-radius:12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  width:340px;
+}
+.display{
+  height:64px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin-bottom:12px;
+  padding:12px;
+  font-size:28px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  background: #fff;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+.keys{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 60px);
+  gap:8px;
+}
+.btn{
+  border: none;
+  border-radius:8px;
+  padding:10px;
+  font-size:18px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.btn:hover{ transform: scale(1.05); }
+.btn:active{ transform: scale(0.98); }
+.number{ background: lightgray; color: #2d2d2d; }
+.action{ background: palevioletred; color: #fff; }
+.action[data-action="equals"]{ background: #c0392b; }
+.action[data-action="clear"]{ background: #ff6b6b; }
+.btn:focus{ outline: none; }
+
+@media (max-width:360px){
+  .calculator{ width:94vw; }
+  .keys{ grid-template-rows: repeat(5, 56px); }
+}

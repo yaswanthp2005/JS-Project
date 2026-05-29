@@ -1,0 +1,47 @@
+/* Global */
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background: #f7f8fc;
+  margin:0;
+  padding:0;
+}
+.app{max-width:900px;margin:30px auto}
+
+.header{background:#3f51b5;color:white;padding:16px;border-radius:6px}
+.header h1{margin:0;font-size:24px}
+
+.container{background:white;padding:16px;margin-top:12px;border-radius:6px;color:#333}
+
+.search{width:100%;padding:10px;border:1px solid #ccc;border-radius:4px;margin-bottom:12px}
+
+.task-form{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.task-form input[type="text"], .task-form input[type="date"], .task-form input[type="time"], .task-form input{padding:8px;border:1px solid #ccc;border-radius:4px}
+.task-form input#task-input{flex:1}
+
+#add-btn{background:#4caf50;color:white;border:none;padding:9px 12px;border-radius:4px;cursor:pointer}
+#add-btn:hover{background:#388e3c}
+
+.task-day{background:#e8f5e9;padding:8px;margin-top:12px;border-radius:4px}
+.task-day h3{margin:0;color:#3f51b5}
+
+.task-item{padding:8px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}
+.task-item .left{display:flex;flex-direction:column}
+.task-item .time{color:#0a0000;font-size:13px}
+
+.buttons{display:flex;gap:8px}
+.btn-edit{background:#ffca28;color:#333;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+.btn-edit:hover{background:#fbc02d}
+.btn-delete{background:#f44336;color:white;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+.btn-delete:hover{background:#d32f2f}
+
+.empty{background:#ffecb3;color:#795548;border:1px solid #ffcc80;padding:10px;border-radius:4px}
+
+.message{background:#ffecb3;color:#795548;border:1px solid #ffcc80;padding:10px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.message.hidden{display:none}
+.message button{background:transparent;border:none;cursor:pointer;font-weight:bold}
+
+@media(max-width:600px){
+  .task-form{flex-direction:column;align-items:stretch}
+  .buttons{gap:6px}
+}

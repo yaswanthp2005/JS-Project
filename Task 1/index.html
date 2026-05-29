@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Create an Event Invite</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<main class="page-wrap">
+		<div id="message" class="message hidden">
+			<span id="message-text">Please fill in all fields</span>
+			<button id="message-close" class="message-close">×</button>
+		</div>
+
+		<section class="form-wrapper">
+			<h1 class="form-title">Create an Event Invite</h1>
+
+			<form id="event-form" class="event-form">
+				<label>
+					Event name
+					<input type="text" id="event-name" name="eventName" />
+				</label>
+
+				<label>
+					Event Date
+					<input type="date" id="event-date" name="eventDate" />
+				</label>
+
+				<label>
+					Start time
+					<input type="time" id="start-time" name="startTime" />
+				</label>
+
+				<label>
+					End time
+					<input type="time" id="end-time" name="endTime" />
+				</label>
+
+				<label>
+					Event Description
+					<textarea id="description" name="description" rows="4"></textarea>
+				</label>
+
+				<label>
+					Location
+					<input type="text" id="location" name="location" />
+				</label>
+
+				<button type="submit" id="submit-btn" class="submit-btn">Create Invite</button>
+			</form>
+		</section>
+
+		<section id="invite-section" class="invite-section hidden"></section>
+	</main>
+
+	<script src="script.js"></script>
+</body>
+</html>
