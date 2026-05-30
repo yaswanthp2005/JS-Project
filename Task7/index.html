@@ -2,43 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Currency Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="page">
-    <section class="card">
-      <h1>Currency Converter</h1>
+  <div class="box">
+    <h1>Currency Converter</h1>
 
-      <label for="amount">Enter amount</label>
-      <input id="amount" type="number" placeholder="100" required min="0" />
+    <p class="text">Enter amount</p>
+    <input id="amount" type="number" placeholder="100" required min="1">
 
-      <div class="row">
-        <div class="select-wrap">
-          <img id="flag-from" class="flag" alt="flag" />
-          <select id="fromCurrency">
-            <option value="USD">USD - United States Dollar</option>
-          </select>
-        </div>
-
-        <div class="to-label">TO</div>
-
-        <div class="select-wrap">
-          <img id="flag-to" class="flag" alt="flag" />
-          <select id="toCurrency">
-            <option value="INR">INR - Indian Rupee</option>
-          </select>
-        </div>
+    <div class="row">
+      <div class="select-box">
+        <img id="flag1" src="" alt="flag">
+        <select id="fromCurrency"></select>
       </div>
 
-      <button id="convertBtn">Convert</button>
+      <p class="to">TO</p>
 
-      <p id="result" class="result" aria-live="polite" hidden>100 USD = 8,407.52 INR</p>
-      <p id="error" class="error" hidden>An error occurred, please try again later</p>
-    </section>
-  </main>
+      <div class="select-box">
+        <img id="flag2" src="" alt="flag">
+        <select id="toCurrency"></select>
+      </div>
+    </div>
+
+    <button id="convertBtn">Convert</button>
+
+    <p id="result" class="result" hidden>100 USD = 8,350.24 INR</p>
+    <p id="error" class="error" hidden>An error occurred, please try again later</p>
+  </div>
 
   <script src="script.js"></script>
 </body>

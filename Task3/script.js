@@ -1,72 +1,88 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-  const grid = document.getElementById('grid');
-  const resetBtn = document.getElementById('reset');
-  const totalShips = 5;
-  const maxClicks = 8;
-  let shipPositions = [];
-  let shipsFound = 0;
-  let clicks = 0;
+document.addEventListener('DOMContentLoaded', function () {
+  var grid = document.getElementById('grid');
+  var resetBtn = document.getElementById('reset');
+  var totalShips = 5;
+  var maxClicks = 8;
+  var shipPositions = [];
+  var shipsFound = 0;
+  var clicks = 0;
 
-  function init(){
+  function shuffleList(list) {
+    for (var i = list.length - 1; i > 0; i--) {
+      var randomIndex = Math.floor(Math.random() * (i + 1));
+      var temp = list[i];
+      list[i] = list[randomIndex];
+      list[randomIndex] = temp;
+    }
+  }
+
+  function startGame() {
     grid.innerHTML = '';
     shipPositions = [];
     shipsFound = 0;
     clicks = 0;
 
-    const indices = Array.from({length:16}, (_,i)=>i);
-    for(let i=indices.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
+    var numbers = [];
+    for (var i = 0; i < 16; i++) {
+      numbers.push(i);
     }
-    shipPositions = indices.slice(0, totalShips);
 
-    for(let i=0;i<16;i++){
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.dataset.index = i;
+    shuffleList(numbers);
+    shipPositions = numbers.slice(0, totalShips);
 
-      const span = document.createElement('span');
-      span.className = 'hidden';
-      span.textContent = shipPositions.includes(i) ? '🚢' : '💧';
-
-      cell.appendChild(span);
-      cell.addEventListener('click', onCellClick);
-      grid.appendChild(cell);
+    for (var j = 0; j < 16; j++) {
+      var box = document.createElement('div');
+      box.className = 'cell';
+      box.dataset.index = j;
+      box.addEventListener('click', cellClick);
+      grid.appendChild(box);
     }
   }
 
-  function onCellClick(e){
-    const cell = e.currentTarget;
-    if(cell.classList.contains('revealed')) return;
-    cell.classList.add('revealed');
+  function cellClick(event) {
+    var box = event.currentTarget;
 
-    const span = cell.querySelector('.hidden');
-    span.style.display = 'block';
-
-    clicks++;
-    const idx = Number(cell.dataset.index);
-    if(shipPositions.includes(idx)){
-      shipsFound++;
-    }
-
-    if(shipsFound === totalShips){
-      if(clicks <= maxClicks) alert('You Won!');
-      else alert('You Lost!');
-      disableAll();
+    if (box.classList.contains('revealed')) {
       return;
     }
 
-    if(clicks >= maxClicks && shipsFound < totalShips){
+    var index = Number(box.dataset.index);
+    var shipFound = shipPositions.indexOf(index) !== -1;
+
+    if (shipFound) {
+      box.classList.add('revealed');
+      box.classList.add('ship');
+      shipsFound++;
+    } else {
+      box.classList.add('revealed');
+      box.classList.add('water');
+    }
+
+    clicks++;
+
+    if (shipsFound === totalShips) {
+      if (clicks <= maxClicks) {
+        alert('You Won!');
+      } else {
+        alert('You Lost!');
+      }
+      stopGame();
+      return;
+    }
+
+    if (clicks >= maxClicks && shipsFound < totalShips) {
       alert('You Lost!');
-      disableAll();
+      stopGame();
     }
   }
 
-  function disableAll(){
-    const cells = document.querySelectorAll('.cell');
-    cells.forEach(c => c.removeEventListener('click', onCellClick));
+  function stopGame() {
+    var cells = document.querySelectorAll('.cell');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].removeEventListener('click', cellClick);
+    }
   }
 
-  resetBtn.addEventListener('click', init);
-  init();
+  resetBtn.addEventListener('click', startGame);
+  startGame();
 });

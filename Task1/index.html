@@ -8,9 +8,13 @@
 </head>
 <body>
 	<main class="page-wrap">
-		<div id="message" class="message hidden">
-			<span id="message-text">Please fill in all fields</span>
-			<button id="message-close" class="message-close">×</button>
+		<div id="message" class="message hidden" aria-hidden="true">
+			<div class="message-box" role="dialog" aria-modal="true" aria-labelledby="message-text">
+				<button id="message-close" class="message-close" aria-label="Close">×</button>
+				<div class="message-content">
+					<span id="message-text">Please fill in all fields</span>
+				</div>
+			</div>
 		</div>
 
 		<section class="form-wrapper">

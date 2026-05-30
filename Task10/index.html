@@ -1,33 +1,47 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>To-Do List</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="app">
-    <header class="header">
-      <h1>To-Do List</h1>
-    </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="header-inner">
+          <h1>To-Do List</h1>
+          <input id="search" type="text" placeholder="Search tasks..." class="search header-search" />
+        </div>
+      </header>
 
-    <main class="container">
-      <div id="message" class="message hidden"></div>
+      <main class="container">
 
-      <input id="search" type="text" placeholder="Search tasks..." class="search" />
+        <form id="task-form" class="task-form">
+          <input id="task-input" placeholder="Add your task here" />
+          <input id="date-input" type="date" />
+          <input id="time-input" type="time" />
+          <button id="add-btn" type="submit">Add Task</button>
+        </form>
 
-      <form id="task-form" class="task-form">
-        <input id="task-input" placeholder="Add your task here" />
-        <input id="date-input" type="date" />
-        <input id="time-input" type="time" />
-        <button id="add-btn" type="submit">Add Task</button>
-      </form>
+        <section class="tasks-card">
+          <h2 class="section-title">Due Tasks</h2>
+          <div id="due-tasks-list"></div>
+        </section>
 
-      <div id="tasks"></div>
-    </main>
-  </div>
+        <div id="edit-area" class="edit-area hidden"></div>
 
-  <script src="script.js"></script>
-</body>
+        <div id="modal" class="modal hidden">
+          <div class="modal-content">
+            <button id="modal-close" class="modal-close">×</button>
+            <p id="modal-text">Please fill in all fields.</p>
+            <button id="modal-ok" class="btn btn-green">OK</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
 </html>

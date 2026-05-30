@@ -15,13 +15,15 @@ const newsData = [
 ];
 
 const state = {
-  visibleCount: 7,
+  visibleCount: 3,
   showingAll: false,
   activeTags: new Set(['All']),
   searchTerm: ''
 };
 
-const newsGrid = document.getElementById('newsGrid');
+const heroEl = document.getElementById('hero');
+const cardsEl = document.getElementById('cards');
+const moreListEl = document.getElementById('moreList');
 const tagsEl = document.getElementById('tags');
 const showMoreBtn = document.getElementById('showMore');
 const searchInput = document.getElementById('search');
@@ -88,19 +90,41 @@ function filterAndSort(){
 function renderNews(){
   const data = filterAndSort();
   const toShow = state.showingAll ? data : data.slice(0, state.visibleCount);
-  newsGrid.innerHTML = toShow.map(n=>`
+
+  // Hero (first item)
+  if(toShow.length > 0){
+    const h = toShow[0];
+    heroEl.innerHTML = `
+      <div class="meta">${new Date(h.date).toLocaleDateString()} • ${escapeHtml(h.category)}</div>
+      <h3 class="title">${highlightText(h.title, state.searchTerm)}</h3>
+      <p class="summary">${highlightText(h.summary, state.searchTerm)}</p>
+    `;
+  } else {
+    heroEl.innerHTML = '';
+  }
+
+  // Two supporting cards (next two)
+  const small = toShow.slice(1,3);
+  cardsEl.innerHTML = small.map(n=>`
     <article class="card">
-      <img src="${n.image}" alt="${escapeHtml(n.title)}" />
-      <div class="body">
-        <div class="meta">${new Date(n.date).toLocaleString()} • ${escapeHtml(n.category)}</div>
-        <h3 class="title">${highlightText(n.title, state.searchTerm)}</h3>
-        <p class="summary">${highlightText(n.summary, state.searchTerm)}</p>
-      </div>
+      <div class="meta">${new Date(n.date).toLocaleDateString()} • ${escapeHtml(n.category)}</div>
+      <h4 class="title">${highlightText(n.title, state.searchTerm)}</h4>
+      <p class="summary">${highlightText(n.summary, state.searchTerm)}</p>
     </article>
   `).join('');
 
-  // Show or hide showMore button
-  showMoreBtn.style.display = (data.length > state.visibleCount && !state.showingAll) ? 'inline-block' : 'none';
+  // Remaining items go into moreList (if showingAll, include all remaining)
+  const remaining = state.showingAll ? data.slice(3) : data.slice(3, state.visibleCount);
+  moreListEl.innerHTML = remaining.map(n=>`
+    <article class="card">
+      <div class="meta">${new Date(n.date).toLocaleDateString()} • ${escapeHtml(n.category)}</div>
+      <h4 class="title">${highlightText(n.title, state.searchTerm)}</h4>
+      <p class="summary">${highlightText(n.summary, state.searchTerm)}</p>
+    </article>
+  `).join('');
+
+  // Show when not showing all and there are more items than the visible count
+  showMoreBtn.style.display = (!state.showingAll && data.length > state.visibleCount) ? 'inline-block' : 'none';
 }
 
 function debounce(fn, wait){

@@ -7,20 +7,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="header">
-    <h1>News Explorer</h1>
-    <p>Task 9 — implementing the assignment requirements only.</p>
+  <header class="top">
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="dolor sit" />
+    </div>
+    <h2 class="heading">Top stories for you</h2>
+    <div id="tags" class="filters" aria-label="Categories"></div>
   </header>
 
-  <section class="controls">
-    <div id="tags" class="tags"></div>
-    <div class="search">
-      <input id="search" type="search" placeholder="Search news..." />
-    </div>
-  </section>
-
   <main>
-    <section id="newsGrid" class="news-grid" aria-live="polite"></section>
+    <section id="hero" class="hero" aria-live="polite"></section>
+    <section id="cards" class="cards-row"></section>
+    <section id="moreList" class="more-list"></section>
     <div class="actions">
       <button id="showMore" class="btn">Show More</button>
     </div>

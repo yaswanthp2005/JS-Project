@@ -1,64 +1,69 @@
 document.addEventListener('DOMContentLoaded',()=>{
-  const passwordInput = document.getElementById('password');
-  const copyBtn = document.getElementById('copyBtn');
-  const lengthRange = document.getElementById('lengthRange');
-  const lengthValue = document.getElementById('lengthValue');
-  const num = document.getElementById('num');
-  const lower = document.getElementById('lower');
-  const upper = document.getElementById('upper');
-  const punct = document.getElementById('punct');
-  const clipboardAlert = document.getElementById('clipboardAlert');
-  const optionsAlert = document.getElementById('optionsAlert');
+  const pw = document.getElementById('pw');
+  const copy = document.getElementById('copy');
+  const len = document.getElementById('len');
+  const lenVal = document.getElementById('lenVal');
+  const n = document.getElementById('n');
+  const l = document.getElementById('l');
+  const u = document.getElementById('u');
+  const p = document.getElementById('p');
+  const ok = document.getElementById('clipboardAlert');
+  const bad = document.getElementById('optionsAlert');
 
   const nums = '0123456789';
-  const lowers = 'abcdefghijklmnopqrstuvwxyz';
-  const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const puncts = '!@#$%^&*()_+[]{};:,.<>?/`~\\-=';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const punct = '!@#$%^&*()_+[]{};:,.<>?/`~\\-=';
 
-  function showAlert(el){
-    el.style.display='block';
-    setTimeout(()=>el.style.display='none',3000);
+  function msg(el){
+    el.style.display = 'block';
+    setTimeout(function(){
+      el.style.display = 'none';
+    }, 3000);
   }
 
-  function generatePassword(){
-    const length = Number(lengthRange.value);
-    lengthValue.textContent = length;
+  function make(){
+    const size = Number(len.value);
+    lenVal.textContent = size;
 
-    let charset = '';
-    if(num.checked) charset += nums;
-    if(lower.checked) charset += lowers;
-    if(upper.checked) charset += uppers;
-    if(punct.checked) charset += puncts;
+    let all = '';
+    if(n.checked) all += nums;
+    if(l.checked) all += lower;
+    if(u.checked) all += upper;
+    if(p.checked) all += punct;
 
-    if(!charset){
-      passwordInput.value = '';
-      showAlert(optionsAlert);
+    if(all === ''){
+      pw.value = '';
+      msg(bad);
       return;
     }
 
-    let pw = '';
-    for(let i=0;i<length;i++) pw += charset[Math.floor(Math.random()*charset.length)];
-    passwordInput.value = pw;
+    let text = '';
+    for(let i = 0; i < size; i++){
+      text += all[Math.floor(Math.random() * all.length)];
+    }
+
+    pw.value = text;
   }
 
-  // initial generate
-  generatePassword();
+  make();
 
-  // events
-  lengthRange.addEventListener('input',generatePassword);
-  [num,lower,upper,punct].forEach(c=>c.addEventListener('change',generatePassword));
+  len.addEventListener('input', make);
+  [n, l, u, p].forEach(function(box){
+    box.addEventListener('change', make);
+  });
 
-  copyBtn.addEventListener('click',async()=>{
-    const val = passwordInput.value;
-    if(!val) return;
+  copy.addEventListener('click', async()=>{
+    const val = pw.value;
+    if(val === '') return;
+
     try{
       await navigator.clipboard.writeText(val);
-      showAlert(clipboardAlert);
+      msg(ok);
     }catch(e){
-      // fallback
-      passwordInput.select();
+      pw.select();
       document.execCommand('copy');
-      showAlert(clipboardAlert);
+      msg(ok);
     }
   });
 });

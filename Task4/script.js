@@ -1,60 +1,91 @@
-const cells = Array.from(document.querySelectorAll('.cell'));
-const winnerEl = document.getElementById('winner');
-const resetBtn = document.getElementById('reset');
+const boardCells = Array.from(document.querySelectorAll('.cell'));
+const messageBox = document.getElementById('winner');
+const resetButton = document.getElementById('reset');
 
-let board = Array(9).fill(null);
-let clickCount = 0;
-let winner = null;
+let board = Array(9).fill('');
+let currentPlayer = 'X';
+let gameOver = false;
 
-const winCombos = [
-  [0,1,2], [3,4,5], [6,7,8],
-  [0,3,6], [1,4,7], [2,5,8],
-  [0,4,8], [2,4,6]
+const winningLines = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
 ];
 
-function updateWinnerDisplay(text){
-  winnerEl.textContent = text || '';
+function showMessage(text) {
+  messageBox.textContent = text;
 }
 
-function checkWin(){
-  for(const combo of winCombos){
-    const [a,b,c] = combo;
-    if(board[a] && board[a] === board[b] && board[b] === board[c]){
-      winner = board[a];
-      cells[a].classList.add('win');
-      cells[b].classList.add('win');
-      cells[c].classList.add('win');
-      updateWinnerDisplay(`${winner} wins!`);
+function checkWinner() {
+  for (const line of winningLines) {
+    const first = line[0];
+    const second = line[1];
+    const third = line[2];
+
+    if (board[first] && board[first] === board[second] && board[second] === board[third]) {
+      gameOver = true;
+      boardCells[first].classList.add('win');
+      boardCells[second].classList.add('win');
+      boardCells[third].classList.add('win');
+      showMessage(currentPlayer + ' wins!');
       return true;
     }
   }
-  // tie detection
-  if(board.every(v => v !== null)){
-    updateWinnerDisplay('It\'s a tie!');
-    return false;
+
+  if (board.every(value => value !== '')) {
+    gameOver = true;
+    showMessage('It\'s a tie!');
+    return true;
   }
+
   return false;
 }
 
-function handleCellClick(e){
-  const idx = Number(e.currentTarget.dataset.index);
-  if(board[idx] || winner) return; // ignore if already set or game over
+function playMove(event) {
+  const cell = event.currentTarget;
+  const index = Number(cell.dataset.index);
 
-  clickCount++;
-  const mark = (clickCount % 2 === 1) ? 'X' : 'O';
-  board[idx] = mark;
-  e.currentTarget.textContent = mark;
+  if (board[index] !== '' || gameOver) {
+    return;
+  }
 
-  checkWin();
+  board[index] = currentPlayer;
+  cell.textContent = currentPlayer;
+
+  if (currentPlayer === 'X') {
+    cell.classList.add('x');
+  } else {
+    cell.classList.remove('x');
+  }
+
+  if (checkWinner()) {
+    return;
+  }
+
+  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 }
 
-function reset(){
-  board.fill(null);
-  clickCount = 0;
-  winner = null;
-  cells.forEach(c => { c.textContent = ''; c.classList.remove('win'); });
-  updateWinnerDisplay('');
+function resetGame() {
+  board = Array(9).fill('');
+  currentPlayer = 'X';
+  gameOver = false;
+
+  boardCells.forEach(cell => {
+    cell.textContent = '';
+    cell.classList.remove('win');
+    cell.classList.remove('x');
+  });
+
+  showMessage('');
 }
 
-cells.forEach(c => c.addEventListener('click', handleCellClick));
-resetBtn.addEventListener('click', reset);
+boardCells.forEach(cell => {
+  cell.addEventListener('click', playMove);
+});
+
+resetButton.addEventListener('click', resetGame);

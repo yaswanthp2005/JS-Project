@@ -7,19 +7,22 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Battleship</h1>
+  <main class="game-shell">
+    <header class="intro">
+      <h1>Battleship</h1>
+      <div class="rules">
+        <h2>Game Rules</h2>
+        <ol>
+          <li>Click on the cells to reveal the image hidden behind them.</li>
+          <li>There are 5 ships hidden in the game.</li>
+          <li>You win if you can find all ships in less than 8 clicks, else you lose.</li>
+        </ol>
+      </div>
+    </header>
 
-  <div class="rules">
-    <h2>Rules</h2>
-    <ul>
-      <li>Click on the cells to reveal the image hidden behind them.</li>
-      <li>There are 5 ships hidden in the game.</li>
-      <li>You win if you can find all ships in 8 clicks or less, else you lose.</li>
-    </ul>
-  </div>
-
-  <div class="grid" id="grid"></div>
-  <button id="reset">Reset</button>
+    <div class="grid" id="grid" aria-label="Battleship board"></div>
+    <button id="reset" type="button">Reset</button>
+  </main>
 
   <script src="script.js"></script>
 </body>

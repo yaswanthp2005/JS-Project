@@ -1,51 +1,56 @@
 document.addEventListener('DOMContentLoaded', function () {
-	const form = document.getElementById('event-form');
-	const formWrapper = document.querySelector('.form-wrapper');
-	const message = document.getElementById('message');
-	const messageClose = document.getElementById('message-close');
-	const inviteSection = document.getElementById('invite-section');
+	const eventForm = document.getElementById('event-form');
+	const eventFormWrapper = document.querySelector('.form-wrapper');
+	const modalOverlay = document.getElementById('message');
+	const modalCloseButton = document.getElementById('message-close');
+	const inviteContainer = document.getElementById('invite-section');
 
-	function showMessage(text) {
+	function openModal(text) {
 		document.getElementById('message-text').textContent = text;
-		message.classList.remove('hidden');
+		modalOverlay.setAttribute('aria-hidden', 'false');
+		modalOverlay.classList.remove('hidden');
+		modalCloseButton.focus();
 	}
 
-	function hideMessage() {
-		message.classList.add('hidden');
+	function closeModal() {
+		modalOverlay.classList.add('hidden');
+		modalOverlay.setAttribute('aria-hidden', 'true');
 	}
 
-	messageClose.addEventListener('click', hideMessage);
+	modalCloseButton.addEventListener('click', closeModal);
 
-	form.addEventListener('submit', function (e) {
+	modalOverlay.addEventListener('click', function (e) {
+		if (e.target === modalOverlay) closeModal();
+	});
+
+	eventForm.addEventListener('submit', function (e) {
 		e.preventDefault();
 
-		const name = document.getElementById('event-name').value.trim();
-		const date = document.getElementById('event-date').value.trim();
-		const start = document.getElementById('start-time').value.trim();
-		const end = document.getElementById('end-time').value.trim();
-		const desc = document.getElementById('description').value.trim();
-		const location = document.getElementById('location').value.trim();
+		const eventTitle = document.getElementById('event-name').value.trim();
+		const eventDateVal = document.getElementById('event-date').value.trim();
+		const startTimeVal = document.getElementById('start-time').value.trim();
+		const endTimeVal = document.getElementById('end-time').value.trim();
+		const descriptionText = document.getElementById('description').value.trim();
+		const eventLocation = document.getElementById('location').value.trim();
 
-		if (!name || !date || !start || !end || !desc || !location) {
-			showMessage('Please fill in all fields');
+		if (!eventTitle || !eventDateVal || !startTimeVal || !endTimeVal || !descriptionText || !eventLocation) {
+			openModal('Please fill in all fields');
 			return;
 		}
 
-		// Hide the full form block so only the result remains
-		formWrapper.classList.add('hidden');
-		hideMessage();
+		eventFormWrapper.classList.add('hidden');
+		closeModal();
 
-		// Build invite card
-		inviteSection.classList.remove('hidden');
-		inviteSection.innerHTML = '';
+		inviteContainer.classList.remove('hidden');
+		inviteContainer.innerHTML = '';
 
-		function formatDateString(d) {
+		function formatEventDate(d) {
 			const dt = new Date(d);
 			if (isNaN(dt)) return d;
 			return dt.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 		}
 
-		function formatTime(t) {
+		function formatEventTime(t) {
 			if (!t) return '';
 			const [h, m] = t.split(':');
 			const dt = new Date();
@@ -53,45 +58,45 @@ document.addEventListener('DOMContentLoaded', function () {
 			return dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 		}
 
-		const top = document.createElement('div');
-		top.className = 'invite-top';
+		const header = document.createElement('div');
+		header.className = 'invite-top';
 
-		const main = document.createElement('h3');
-		main.className = 'invite-main';
-		main.textContent = 'YOU ARE INVITED';
+		const headerTitle = document.createElement('h3');
+		headerTitle.className = 'invite-main';
+		headerTitle.textContent = 'YOU ARE INVITED';
 
-		const sub = document.createElement('div');
-		sub.className = 'invite-sub';
-		sub.textContent = 'TO JOIN THE';
+		const headerSubtitle = document.createElement('div');
+		headerSubtitle.className = 'invite-sub';
+		headerSubtitle.textContent = 'TO JOIN THE';
 
-		top.appendChild(main);
-		top.appendChild(sub);
+		header.appendChild(headerTitle);
+		header.appendChild(headerSubtitle);
 
-		const eventName = document.createElement('div');
-		eventName.className = 'invite-event-name';
-		eventName.textContent = name;
+		const eventTitleEl = document.createElement('div');
+		eventTitleEl.className = 'invite-event-name';
+		eventTitleEl.textContent = eventTitle;
 
 		const dateEl = document.createElement('div');
 		dateEl.className = 'invite-date';
-		dateEl.textContent = formatDateString(date);
+		dateEl.textContent = formatEventDate(eventDateVal);
 
 		const timeEl = document.createElement('div');
 		timeEl.className = 'invite-time';
-		timeEl.textContent = `${formatTime(start)} - ${formatTime(end)}`;
+		timeEl.textContent = `${formatEventTime(startTimeVal)} - ${formatEventTime(endTimeVal)}`;
 
-		const locEl = document.createElement('div');
-		locEl.className = 'invite-location';
-		locEl.textContent = location;
+		const locationEl = document.createElement('div');
+		locationEl.className = 'invite-location';
+		locationEl.textContent = eventLocation;
 
-		const descLine = document.createElement('p');
-		descLine.className = 'invite-desc';
-		descLine.textContent = desc;
+		const descriptionEl = document.createElement('p');
+		descriptionEl.className = 'invite-desc';
+		descriptionEl.textContent = descriptionText;
 
-		inviteSection.appendChild(top);
-		inviteSection.appendChild(eventName);
-		inviteSection.appendChild(dateEl);
-		inviteSection.appendChild(timeEl);
-		inviteSection.appendChild(locEl);
-		inviteSection.appendChild(descLine);
+		inviteContainer.appendChild(header);
+		inviteContainer.appendChild(eventTitleEl);
+		inviteContainer.appendChild(dateEl);
+		inviteContainer.appendChild(timeEl);
+		inviteContainer.appendChild(locationEl);
+		inviteContainer.appendChild(descriptionEl);
 	});
 });

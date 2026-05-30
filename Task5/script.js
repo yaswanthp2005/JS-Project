@@ -1,113 +1,131 @@
-const ROWS = 6;
-const COLS = 5;
-const board = document.getElementById('board');
-const input = document.getElementById('guessInput');
-const submitBtn = document.getElementById('submitBtn');
-const feedback = document.getElementById('feedback');
+var maxRows = 6;
+var numCols = 5;
+var boardEl = document.getElementById('board');
+var guessInput = document.getElementById('guessInput');
+var submitBtnEl = document.getElementById('submitBtn');
+var feedbackEl = document.getElementById('feedback');
 
-// A shorter curated list of 200 common 5-letter words (beginner-friendly)
-const words = [
-  "about","other","which","their","there","first","could","there","these","would",
-  "thing","where","those","after","great","think","three","years","place","sound",
-  "still","every","small","found","those","never","under","might","while","house",
-  "world","below","asked","going","being","study","group","again","learn","plant",
-  "cover","often","watch","today","along","short","right","young","point","carry",
-  "plain","voice","paper","store","night","start","story","white","liked","whole",
-  "music","river","since","money","class","order","level","black","given","glass",
-  "phone","enjoy","field","among","speed","bring","close","trade","ocean","heart",
-  "carry","bread","maybe","carry","equal","shown","train","could","built","bread",
-  "score","stone","track","light","heavy","human","dance","taste","speak","serve",
-  "sleep","smile","carry","paint","drive","thing","enter","leave","sport","value",
-  "catch","fight","guide","laugh","begin","chess","books","clean","sharp","ghost",
-  "solid","metal","pilot","baker","grail","brave","crown","delay","favor","grade",
-  "house","image","japan","kings","lemon","magic","north","ocean","pride","queen",
-  "river","stage","teeth","unity","vital","water","xenon","youth","zebra","atlas",
-  "blend","cargo","delta","eager","faint","giant","habit","ideal","jolly","kneel",
-  "label","march","noble","ocean","piano","quick","rough","sunny","trust","urban",
-  "vivid","worry","xylem","yield","zesty","adopt","brush","crane","drove","eager",
-  "ferry","gauge","honor","input","juror","knead","laser","mango","naiad","ozone",
-  "penny","quest","ranch","shard","tidal","union","vocal","wedge","yacht","zonal",
-  "actor","bison","civic","dandy","embed","flute","grace","henry","irony","jewel",
-  "karma","lunar","motel","nurse","opera","pepper","quilt","realm","savvy","timid",
-  "ultra","vapor","whale","xenon","yummy","zippy","acorn","brisk","cabin","doubt",
-  "eagle","focal","giddy","hasty","ivory","jumbo","kayak","linen","mocha","novel",
-  "olive","pacer","quark","radar","saver","tango","usher","verge","waltz","yummy",
-  "zonal","alert","blink","cheer","dried","epoch","flair","gloss","hoard","inlet",
-  "jumbo","knack","lodge","mirth","nylon","olden","patio","quill","risky","sleet",
-  "tiger","under","vocal","wager","xenia","yolks","zesty","aisle","brute","cacao",
-  "donut","eclat","fancy","glove","homer","inbox","joust","knife","loyal","mason",
-  "naval","oaken","pixel","quirk","raven","saber","tempo","unite","vigil","woven"
+var words = [
+    "which", "there", "their", "about", "would", "these", "other", "words", "could", "write", "first", "water",
+    "after", "where", "right", "think", "three", "years", "place", "sound", "great", "again", "still", "every",
+    "small", "found", "those", "never", "under", "might", "while", "house", "world", "below", "asked", "going",
+    "large", "until", "along", "shall", "being", "often", "earth", "began", "since", "study", "night", "light",
+    "above", "paper", "parts", "young", "story", "point", "times", "heard", "whole", "white", "given", "means",
+    "music", "miles", "thing", "today", "later", "using", "money", "lines", "order", "group", "among", "learn",
+    "known", "space", "table", "early", "trees", "short", "hands", "state", "black", "shown", "stood", "front",
+    "voice", "kinds", "makes", "comes", "close", "power", "lived", "vowel", "taken", "built", "heart", "ready",
+    "quite", "class", "bring", "round", "horse", "shows", "piece", "green", "stand", "birds", "start", "river",
+    "tried", "least", "field", "whose", "girls", "leave", "added", "color", "third", "hours", "moved", "plant",
+    "doing", "names", "forms", "heavy", "ideas", "cried", "check", "floor", "begin", "woman", "alone", "plane",
+    "spell", "watch", "carry", "wrote", "clear", "named", "books", "child", "glass", "human", "takes", "party",
+    "build", "seems", "blood", "sides", "seven", "mouth", "solve", "north", "value", "death", "maybe", "happy",
+    "tells", "gives", "looks", "shape", "lives", "steps", "areas", "sense", "speak", "force", "ocean", "speed",
+    "women", "metal", "south", "grass", "scale", "cells", "lower", "sleep", "wrong", "pages", "ships", "needs",
+    "rocks", "eight", "major", "level", "total", "ahead", "reach", "stars", "store", "sight", "terms", "catch",
+    "works", "board", "cover", "songs", "equal", "stone", "waves", "guess", "dance", "spoke", "break", "cause",
+    "radio", "weeks", "lands", "basic", "liked", "trade", "fresh", "final", "fight", "meant", "drive", "spent",
+    "local", "waxes", "knows", "train", "bread", "homes", "teeth", "coast", "thick", "brown", "clean", "quiet",
+    "sugar", "facts", "steel", "forth", "rules", "notes", "units", "peace", "month", "verbs", "seeds", "helps",
+    "sharp", "visit", "woods", "chief", "walls", "cross", "wings", "grown", "cases", "foods", "crops", "fruit",
+    "stick", "wants", "stage", "sheep", "nouns", "plain", "drink", "bones", "apart", "turns", "moves", "touch",
+    "angle", "based", "range", "marks", "tired", "older", "farms", "spend", "shoes", "goods", "chair", "twice",
+    "cents", "empty", "alike", "style", "broke", "pairs", "count", "enjoy", "score", "shore", "roots", "paint",
+    "heads", "shook", "serve", "angry", "crowd", "wheel", "quick", "dress", "share", "alive", "noise", "solid",
+    "cloth", "signs", "hills", "types", "drawn", "worth", "truck", "piano", "upper", "loved", "usual", "faces",
+    "drove", "cabin", "boats", "towns", "proud", "court", "model", "prime", "fifty", "plans", "yards", "prove",
+    "tools", "price", "sheet", "smell", "boxes", "raise", "match", "truth", "roads", "threw", "enemy", "lunch",
+    "chart", "scene", "graph", "doubt", "guide", "winds", "block", "grain", "smoke", "mixed", "games", "wagon",
+    "sweet", "topic", "extra", "plate", "title", "knife", "fence", "falls", "cloud", "wheat", "plays", "enter",
+    "broad", "steam", "atoms", "press", "lying", "basis", "clock", "taste", "grows", "thank", "storm", "agree",
+    "brain", "track", "smile", "funny", "beach", "stock", "hurry", "saved", "sorry", "giant", "trail", "offer",
+    "ought", "rough", "daily", "avoid", "keeps", "throw", "allow", "cream", "laugh", "edges", "teach", "frame",
+    "bells", "dream", "magic", "occur", "ended", "chord", "false", "skill", "holes", "dozen", "brave", "apple",
+    "climb", "outer", "pitch", "ruler", "holds", "fixed", "costs", "calls", "blank", "staff", "labor", "eaten",
+    "youth", "tones", "honor", "globe", "gases", "doors", "poles", "loose", "apply", "tears", "exact", "brush",
+    "chest", "layer", "whale", "minor", "faith", "tests", "judge", "items", "worry", "waste", "hoped", "strip",
+    "begun", "aside", "lakes", "bound", "depth", "candy", "event", "worse", "aware", "shell", "rooms", "ranch",
+    "image", "snake", "aloud", "dried", "likes", "motor", "pound", "knees", "refer", "fully", "chain", "shirt",
+    "flour", "drops", "spite", "orbit", "banks", "shoot", "curve", "tribe", "tight", "blind", "slept", "shade",
+    "claim", "flies", "theme", "queen", "fifth", "union", "hence", "straw", "entry", "issue", "birth", "feels",
+    "anger", "brief", "rhyme", "glory", "guard", "flows", "flesh", "owned", "trick", "yours", "sizes", "noted",
+    "width", "burst", "route", "lungs", "uncle", "bears", "royal", "kings", "forty", "trial", "cards", "brass",
+    "opera", "chose", "owner", "vapor", "beats", "mouse", "tough", "wires", "meter", "tower", "finds", "inner",
+    "stuck", "arrow", "poems", "label", "swing", "solar", "truly", "tense", "beans", "split", "rises", "weigh",
+    "hotel", "stems", "pride", "swung", "grade", "digit", "badly", "boots", "pilot", "sales", "swept", "lucky",
+    "prize", "stove", "tubes", "acres", "wound", "steep", "slide", "trunk", "error", "porch", "slave", "exist",
+    "faced", "mines", "marry", "juice", "raced", "waved", "goose", "trust", "fewer", "favor", "mills", "views",
+    "joint", "eager", "spots", "blend", "rings", "adult", "index", "nails", "horns", "balls", "flame", "rates",
+    "drill", "trace", "skins", "waxed", "seats", "stuff", "ratio", "minds", "silly", "coins", "hello", "trips"
 ];
 
-let target = '';
-let attempt = 0;
+var secretWord = '';
+var tryNum = 0;
 
 function pickRandomWord(){
-  target = words[Math.floor(Math.random()*words.length)].toUpperCase();
+  secretWord = words[Math.floor(Math.random()*words.length)].toUpperCase();
 }
 
 function createBoard(){
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const cell = document.createElement('div');
+  for(var r=0;r<maxRows;r++){
+    for(var c=0;c<numCols;c++){
+      var cell = document.createElement('div');
       cell.className = 'cell';
       cell.setAttribute('data-row', r);
       cell.setAttribute('data-col', c);
-      board.appendChild(cell);
+      boardEl.appendChild(cell);
     }
   }
 }
 
 function showMessage(msg){
-  feedback.textContent = msg;
+  feedbackEl.textContent = msg;
 }
 
 function setCell(row,col,char,cls){
-  const index = row*COLS + col;
-  const cell = board.children[index];
+  var index = row*numCols + col;
+  var cell = boardEl.children[index];
   cell.textContent = char;
   if(cls) cell.classList.add(cls);
 }
 
 function checkGuess(guess){
   guess = guess.toUpperCase();
-  const targetArr = target.split('');
-  const guessArr = guess.split('');
-  const result = Array(COLS).fill('absent');
+  var targetArr = secretWord.split('');
+  var guessArr = guess.split('');
+  var result = Array(numCols).fill('absent');
 
-  // first pass: correct
-  for(let i=0;i<COLS;i++){
+  for(var i=0;i<numCols;i++){
     if(guessArr[i] === targetArr[i]){
       result[i] = 'correct';
       targetArr[i] = null;
     }
   }
-  // second pass: present
-  for(let i=0;i<COLS;i++){
+
+  for(var i=0;i<numCols;i++){
     if(result[i] === 'correct') continue;
-    const idx = targetArr.indexOf(guessArr[i]);
+    var idx = targetArr.indexOf(guessArr[i]);
     if(idx !== -1){
       result[i] = 'present';
       targetArr[idx] = null;
     }
   }
 
-  for(let i=0;i<COLS;i++){
-    setCell(attempt,i,guessArr[i], result[i]);
+  for(var i=0;i<numCols;i++){
+    setCell(tryNum,i,guessArr[i], result[i]);
   }
 
-  if(result.every(r=>r==='correct')){
+  if(result.every(function(r){ return r==='correct'; })){
     showMessage('Congratulations! You guessed the word!');
-    input.disabled = true;
-    submitBtn.disabled = true;
+    guessInput.disabled = true;
+    submitBtnEl.disabled = true;
     return true;
   }
 
-  attempt++;
-  if(attempt >= ROWS){
-    showMessage(`Game over, the word was "${target}"`);
-    input.disabled = true;
-    submitBtn.disabled = true;
+  tryNum++;
+  if(tryNum >= maxRows){
+    showMessage('Game over, the word was "' + secretWord + '"');
+    guessInput.disabled = true;
+    submitBtnEl.disabled = true;
     return false;
   }
 
@@ -115,26 +133,26 @@ function checkGuess(guess){
 }
 
 function handleSubmit(){
-  const guess = input.value.trim();
+  var guess = guessInput.value.trim();
   if(guess.length !== 5){
     showMessage('Please enter a 5-letter word');
     return;
   }
-  if(attempt >= ROWS) return;
-  // display on board
+  if(tryNum >= maxRows) return;
   checkGuess(guess);
-  input.value = '';
-  input.focus();
+  guessInput.value = '';
+  guessInput.focus();
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
   createBoard();
   pickRandomWord();
-  // remove placeholder text after styling as requested
-  feedback.textContent = '';
+  feedbackEl.textContent = '';
 });
 
-submitBtn.addEventListener('click', handleSubmit);
-input.addEventListener('keydown', (e)=>{
+submitBtnEl.addEventListener('click', handleSubmit);
+guessInput.addEventListener('keydown', function(e){
   if(e.key === 'Enter') handleSubmit();
 });
+
+

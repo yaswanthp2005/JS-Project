@@ -1,181 +1,107 @@
-const form = document.getElementById('task-form');
-const taskInput = document.getElementById('task-input');
-const dateInput = document.getElementById('date-input');
-const timeInput = document.getElementById('time-input');
-const tasksContainer = document.getElementById('tasks');
-const search = document.getElementById('search');
-const messageBox = document.getElementById('message');
-const addBtn = document.getElementById('add-btn');
+var STORAGE = 'task10_tasks_v1'
+var form = document.getElementById('task-form')
+var taskBox = document.getElementById('task-input')
+var dateBox = document.getElementById('date-input')
+var timeBox = document.getElementById('time-input')
+var addBtn = document.getElementById('add-btn')
+var searchBox = document.getElementById('search')
+var dueList = document.getElementById('due-tasks-list')
+var editArea = document.getElementById('edit-area')
+var modal = document.getElementById('modal')
+var modalText = document.getElementById('modal-text')
+var modalOk = document.getElementById('modal-ok')
+var modalClose = document.getElementById('modal-close')
 
-let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-let editingId = null;
+var tasks = []
+var editing = null
 
-function save(){
-  localStorage.setItem('tasks', JSON.stringify(tasks));
+function loadTasks(){
+  var s = localStorage.getItem(STORAGE)
+  if(s){ try{ tasks = JSON.parse(s) }catch(e){ tasks = [] } }
 }
 
-function formatTime(t){
-  if(!t) return '';
-  const [hh,mm] = t.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hh,mm);
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2,'0');
-  const ampm = hours>=12? 'PM':'AM';
-  hours = hours%12 || 12;
-  return `${hours}:${minutes} ${ampm}`;
-}
+function saveTasks(){ localStorage.setItem(STORAGE, JSON.stringify(tasks)) }
 
-function showMessage(text){
-  messageBox.innerHTML = `<span>${text}</span><button id="close-msg">×</button>`;
-  messageBox.classList.remove('hidden');
-  document.getElementById('close-msg').addEventListener('click', ()=>{
-    messageBox.classList.add('hidden');
-  });
-}
+function today(){ return new Date().toISOString().slice(0,10) }
 
-function clearForm(){
-  taskInput.value = '';
-  dateInput.value = '';
-  timeInput.value = '';
-  editingId = null;
-  addBtn.textContent = 'Add Task';
-}
+function showDate(d){ if(!d) return ''; var p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0] }
+
+function showTime(t){ if(!t) return ''; var a = t.split(':'); var hh = parseInt(a[0],10); var mm = a[1]; var ap = hh<12?'AM':'PM'; var h = hh%12; if(h===0) h=12; return (h<10? '0'+h : h) + ':' + mm + ' ' + ap }
+
+function showModal(text){ modalText.textContent = text; modal.classList.remove('hidden') }
+function hideModal(){ modal.classList.add('hidden') }
+
+function clearForm(){ taskBox.value=''; dateBox.value=''; timeBox.value=''; addBtn.textContent='Add Task'; editing = null }
 
 function addTask(e){
-  e.preventDefault();
-  const text = taskInput.value.trim();
-  const date = dateInput.value;
-  const time = timeInput.value;
-  if(!text || !date || !time){
-    showMessage('Please fill in all fields');
-    return;
-  }
-
-  if(editingId){
-    const idx = tasks.findIndex(t=>t.id===editingId);
-    if(idx>-1){
-      tasks[idx].text = text;
-      tasks[idx].date = date;
-      tasks[idx].time = time;
-    }
-    editingId = null;
-    addBtn.textContent = 'Add Task';
+  e.preventDefault()
+  var t = taskBox.value.trim()
+  var d = dateBox.value
+  var ti = timeBox.value
+  if(!t || !d || !ti){ showModal('Please fill in all fields.'); return }
+  if(editing){
+    for(var i=0;i<tasks.length;i++){ if(tasks[i].id===editing){ tasks[i].text=t; tasks[i].date=d; tasks[i].time=ti; break } }
+    editing = null
   } else {
-    tasks.push({id:Date.now().toString(),text,date,time});
+    tasks.push({ id: Date.now().toString(), text: t, date: d, time: ti })
   }
-  save();
-  clearForm();
-  render();
+  saveTasks()
+  clearForm()
+  render()
 }
 
-function editTask(id){
-  const t = tasks.find(x=>x.id===id);
-  if(!t) return;
-  taskInput.value = t.text;
-  dateInput.value = t.date;
-  timeInput.value = t.time;
-  editingId = id;
-  addBtn.textContent = 'Update Task';
-}
+function removeTask(id){ if(!confirm('Delete this task?')) return; var n = []; for(var i=0;i<tasks.length;i++){ if(tasks[i].id!==id) n.push(tasks[i]) } tasks = n; saveTasks(); render() }
 
-function deleteTask(id){
-  tasks = tasks.filter(t=>t.id!==id);
-  save();
-  render();
-}
+function editTask(id){ editing = id; var t = null; for(var i=0;i<tasks.length;i++){ if(tasks[i].id===id){ t=tasks[i]; break } } if(!t) return; editArea.classList.remove('hidden'); editArea.innerHTML = '<div class="edit-panel"><h3>'+showDate(t.date)+'</h3><input id="edit-input" class="edit-input" value="'+t.text+'" /><div class="edit-actions"><button id="edit-save" class="btn-save">Save</button><button id="edit-cancel" class="btn-cancel">Cancel</button></div></div>'; var ei = document.getElementById('edit-input'); if(ei) ei.focus() }
 
-function groupByDate(list){
-  const map = {};
-  list.forEach(t=>{
-    map[t.date] = map[t.date] || [];
-    map[t.date].push(t);
-  });
-  return map;
-}
+function hideEdit(){ editing = null; editArea.classList.add('hidden'); editArea.innerHTML = '' }
+
+function groupByDate(list){ var g = {}; for(var i=0;i<list.length;i++){ var it = list[i]; if(!g[it.date]) g[it.date]=[]; g[it.date].push(it) } return g }
 
 function render(){
-  const q = search.value.trim().toLowerCase();
-  const filtered = tasks.filter(t=>t.text.toLowerCase().includes(q));
-  if(filtered.length===0){
-    tasksContainer.innerHTML = `<div class="empty">No tasks found</div>`;
-    return;
-  }
-
-  const grouped = groupByDate(filtered);
-  const keys = Object.keys(grouped).sort();
-  const todayKey = new Date().toISOString().slice(0,10);
-
-  let html = '';
-
-  // render today's section first if present
-  if(grouped[todayKey]){
-    const todays = grouped[todayKey];
-    html += `<div class="task-day"><h3>Today</h3>`;
-    // split into Due and Upcoming based on current time
-    const now = new Date();
-    const due = [];
-    const upcoming = [];
-    todays.forEach(t=>{
-      const [hh,mm] = t.time.split(':').map(Number);
-      const d = new Date(); d.setHours(hh,mm,0,0);
-      if(d<=now) due.push(t); else upcoming.push(t);
-    });
-
-    if(due.length){
-      html += `<h4 style="color:#3f51b5;margin:8px 0">Due Tasks</h4>`;
-      due.forEach(t=>{
-        html += renderTaskHtml(t);
-      });
+  var q = (searchBox.value||'').toLowerCase().trim()
+  var filtered = []
+  for(var i=0;i<tasks.length;i++){ var it = tasks[i]; if(!q || it.text.toLowerCase().indexOf(q)!==-1 || showDate(it.date).toLowerCase().indexOf(q)!==-1) filtered.push(it) }
+  var td = today()
+  var due = []
+  for(var i=0;i<filtered.length;i++){ if(filtered[i].date<=td) due.push(filtered[i]) }
+  due.sort(function(a,b){ if(a.date===b.date) return a.time.localeCompare(b.time); return a.date.localeCompare(b.date) })
+  var groups = groupByDate(due)
+  var keys = Object.keys(groups).sort()
+  var html = ''
+  if(keys.length===0){ html = '<div class="empty">No tasks</div>' }
+  for(var k=0;k<keys.length;k++){
+    var key = keys[k]
+    var list = groups[key]
+    html += '<div class="task-day"><h3>'+(key===td? 'Today': showDate(key))+'</h3>'
+    for(var j=0;j<list.length;j++){
+      var item = list[j]
+      html += '<div class="task-item"><div class="left"><div class="text">'+item.text+'</div><div class="time">'+showTime(item.time)+'</div></div><div class="buttons"><button class="btn-edit" data-id="'+item.id+'">Edit</button><button class="btn-delete" data-id="'+item.id+'">Delete</button></div></div>'
     }
-    if(upcoming.length){
-      html += `<h4 style="color:#3f51b5;margin:8px 0">Upcoming Tasks</h4>`;
-      upcoming.forEach(t=>{
-        html += renderTaskHtml(t);
-      });
-    }
-    html += `</div>`;
+    html += '</div>'
   }
-
-  // render other dates
-  keys.forEach(key=>{
-    if(key===todayKey) return;
-    const list = grouped[key];
-    const d = new Date(key + 'T00:00');
-    const title = d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
-    html += `<div class="task-day"><h3>${title}</h3>`;
-    list.forEach(t=>{ html += renderTaskHtml(t); });
-    html += `</div>`;
-  });
-
-  tasksContainer.innerHTML = html;
-  // attach event listeners
-  document.querySelectorAll('.btn-edit').forEach(btn=>btn.addEventListener('click',e=>{
-    editTask(e.target.dataset.id);
-  }));
-  document.querySelectorAll('.btn-delete').forEach(btn=>btn.addEventListener('click',e=>{
-    deleteTask(e.target.dataset.id);
-  }));
+  dueList.innerHTML = html
 }
 
-function renderTaskHtml(t){
-  return `<div class="task-item">
-    <div class="left">
-      <div class="text">${escapeHtml(t.text)}</div>
-      <div class="time">${formatTime(t.time)}</div>
-    </div>
-    <div class="buttons">
-      <button class="btn-edit" data-id="${t.id}">Edit</button>
-      <button class="btn-delete" data-id="${t.id}">Delete</button>
-    </div>
-  </div>`;
-}
+document.body.addEventListener('click', function(e){
+  var el = e.target
+  if(el.classList.contains('btn-delete')) removeTask(el.getAttribute('data-id'))
+  if(el.classList.contains('btn-edit')) editTask(el.getAttribute('data-id'))
+  if(el.id==='edit-save'){
+    var v = document.getElementById('edit-input')
+    if(!v) return
+    var val = v.value.trim()
+    if(!val){ showModal('Please provide a task description.'); return }
+    for(var i=0;i<tasks.length;i++){ if(tasks[i].id===editing){ tasks[i].text = val; break } }
+    saveTasks(); render(); hideEdit()
+  }
+  if(el.id==='edit-cancel') hideEdit()
+})
 
-function escapeHtml(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+form.addEventListener('submit', addTask)
+searchBox.addEventListener('input', render)
+modalOk.addEventListener('click', hideModal)
+modalClose.addEventListener('click', hideModal)
 
-form.addEventListener('submit', addTask);
-search.addEventListener('input', render);
-
-render();
+loadTasks()
+render()

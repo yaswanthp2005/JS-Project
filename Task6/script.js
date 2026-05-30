@@ -1,116 +1,148 @@
-// Calculator logic for Task 6
-const display = document.getElementById('display');
-const keys = document.querySelector('.keys');
+const screen = document.getElementById('display');
+const buttons = document.querySelector('.keys');
 
-let firstOperand = null;
-let operator = null;
-let waitingForSecond = false;
-let justCalculated = false;
+let firstNumber = null;
+let currentOperator = null;
+let waitForSecondNumber = false;
+let answerShown = false;
 
-keys.addEventListener('click', (e) => {
-  const button = e.target.closest('button');
-  if (!button) return;
+buttons.addEventListener('click', function (event) {
+  const clickedButton = event.target.closest('button');
 
-  if (button.classList.contains('number')) {
-    handleNumber(button.textContent.trim());
+  if (!clickedButton) {
     return;
   }
 
-  const action = button.dataset.action;
-  switch(action){
-    case 'clear': handleClear(); break;
-    case 'delete': handleDelete(); break;
-    case 'percent': handleOperator('%'); break;
-    case 'exp': handleOperator('Exp'); break;
-    case 'operator': handleOperator(button.textContent.trim()); break;
-    case 'equals': handleEquals(); break;
+  if (clickedButton.classList.contains('number')) {
+    typeNumber(clickedButton.textContent.trim());
+    return;
+  }
+
+  const action = clickedButton.dataset.action;
+
+  if (action === 'clear') {
+    clearScreen();
+    return;
+  }
+
+  if (action === 'delete') {
+    deleteLast();
+    return;
+  }
+
+  if (action === 'percent') {
+    setOperator('%');
+    return;
+  }
+
+  if (action === 'exp') {
+    setOperator('Exp');
+    return;
+  }
+
+  if (action === 'operator') {
+    setOperator(clickedButton.textContent.trim());
+    return;
+  }
+
+  if (action === 'equals') {
+    showAnswer();
   }
 });
 
-function handleNumber(num){
-  if (justCalculated){
-    display.textContent = num === '.' ? '0.' : num;
-    justCalculated = false;
-    firstOperand = null;
-    operator = null;
-    waitingForSecond = false;
+function typeNumber(value) {
+  if (answerShown) {
+    screen.textContent = value === '.' ? '0.' : value;
+    firstNumber = null;
+    currentOperator = null;
+    waitForSecondNumber = false;
+    answerShown = false;
     return;
   }
 
-  if (waitingForSecond){
-    // start entering second operand
-    display.textContent = (num === '.') ? '0.' : num;
-    waitingForSecond = false;
+  if (waitForSecondNumber) {
+    screen.textContent = value === '.' ? '0.' : value;
+    waitForSecondNumber = false;
     return;
   }
 
-  if (num === '.'){
-    if (display.textContent.includes('.')) return;
-    display.textContent += '.';
+  if (value === '.') {
+    if (screen.textContent.indexOf('.') !== -1) {
+      return;
+    }
+
+    screen.textContent = screen.textContent + '.';
     return;
   }
 
-  if (display.textContent === '0'){
-    display.textContent = num;
-  } else {
-    display.textContent += num;
+  if (screen.textContent === '0') {
+    screen.textContent = value;
+    return;
   }
+
+  screen.textContent = screen.textContent + value;
 }
 
-function handleOperator(op){
-  // If there's an existing operator and user didn't enter second number, allow operator change
-  if (firstOperand !== null && waitingForSecond){
-    operator = op;
+function setOperator(value) {
+  if (firstNumber !== null && waitForSecondNumber) {
+    currentOperator = value;
     return;
   }
 
-  firstOperand = parseFloat(display.textContent);
-  operator = op;
-  waitingForSecond = true;
-  justCalculated = false;
-  display.textContent = '0';
+  firstNumber = Number(screen.textContent);
+  currentOperator = value;
+  waitForSecondNumber = true;
+  answerShown = false;
+  screen.textContent = '0';
 }
 
-function handleEquals(){
-  if (operator === null || firstOperand === null) return;
-  const second = parseFloat(display.textContent);
-  let result = 0;
-
-  switch(operator){
-    case '+': result = firstOperand + second; break;
-    case '-': result = firstOperand - second; break;
-    case '×':
-    case 'x': result = firstOperand * second; break;
-    case '÷': result = firstOperand / second; break;
-    case '%': result = firstOperand % second; break;
-    case 'Exp': result = Math.pow(firstOperand, second); break;
-    default: result = second; break;
-  }
-
-  display.textContent = String(result);
-  firstOperand = null;
-  operator = null;
-  waitingForSecond = false;
-  justCalculated = true;
-}
-
-function handleClear(){
-  display.textContent = '0';
-  firstOperand = null;
-  operator = null;
-  waitingForSecond = false;
-  justCalculated = false;
-}
-
-function handleDelete(){
-  if (justCalculated){
-    handleClear();
+function showAnswer() {
+  if (firstNumber === null || currentOperator === null) {
     return;
   }
-  let txt = display.textContent;
-  if (txt.length <= 1){
-    display.textContent = '0';
+
+  const secondNumber = Number(screen.textContent);
+  let result = secondNumber;
+
+  if (currentOperator === '+') {
+    result = firstNumber + secondNumber;
+  } else if (currentOperator === '-') {
+    result = firstNumber - secondNumber;
+  } else if (currentOperator === '×') {
+    result = firstNumber * secondNumber;
+  } else if (currentOperator === '÷') {
+    result = firstNumber / secondNumber;
+  } else if (currentOperator === '%') {
+    result = firstNumber % secondNumber;
+  } else if (currentOperator === 'Exp') {
+    result = Math.pow(firstNumber, secondNumber);
+  }
+
+  screen.textContent = String(result);
+  firstNumber = null;
+  currentOperator = null;
+  waitForSecondNumber = false;
+  answerShown = true;
+}
+
+function clearScreen() {
+  screen.textContent = '0';
+  firstNumber = null;
+  currentOperator = null;
+  waitForSecondNumber = false;
+  answerShown = false;
+}
+
+function deleteLast() {
+  if (answerShown) {
+    clearScreen();
     return;
   }
-  display.textContent = txt.slice(0, -1);
+
+  if (screen.textContent.length <= 1) {
+    screen.textContent = '0';
+    return;
+  }
+
+  screen.textContent = screen.textContent.slice(0, -1);
 }

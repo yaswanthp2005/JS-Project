@@ -12,43 +12,44 @@
       <h1>Password Generator</h1>
 
       <div class="password-display">
-        <input id="password" type="text" readonly aria-label="Generated password">
-        <button id="copyBtn">Copy Password</button>
+        <input id="pw" type="text" readonly>
+        <button id="copy">Copy Password</button>
       </div>
 
       <div class="slider-row">
-        <label for="lengthRange">Use the slider and select options to lengthen your password (6-24)</label>
-        <input id="lengthRange" type="range" min="6" max="24" value="9">
-        <span id="lengthValue" class="bold">9</span>
+        <label for="len">Use the slider and select options to lengthen your password (6-24)</label>
+        <input id="len" type="range" min="6" max="24" value="9">
+        <span id="lenVal" class="bold">9</span>
       </div>
 
       <div class="options">
-        <label><input id="num" type="checkbox" checked> Include Numbers</label>
-        <label><input id="lower" type="checkbox" checked> Include Letters</label>
-        <label><input id="upper" type="checkbox" checked> Include Mixed Case</label>
-        <label><input id="punct" type="checkbox" checked> Include Punctuation</label>
+        <label><input id="n" type="checkbox" checked> Include Numbers</label>
+        <label><input id="l" type="checkbox" checked> Include Letters</label>
+        <label><input id="u" type="checkbox" checked> Include Mixed Case</label>
+        <label><input id="p" type="checkbox" checked> Include Punctuation</label>
       </div>
 
-      <div class="info-row">
-        <div class="info">
-          <h2>Do you use any of these weak passwords?</h2>
-          <ul>
-            <li>Password</li>
-            <li>123456</li>
-            <li>Qwerty</li>
-            <li>Your name</li>
-          </ul>
-        </div>
-
-        <div class="info">
-          <h2>Why are those passwords weak?</h2>
-          <ul>
-            <li>They're easy to guess or crack.</li>
-            <li>If one of your logins is compromised, a hacker can access all your services.</li>
-          </ul>
-        </div>
-      </div>
     </section>
+
+    <div class="info-row">
+      <div class="info">
+        <h2>Do you use any of these weak passwords?</h2>
+        <ul>
+          <li>Password</li>
+          <li>123456</li>
+          <li>Qwerty</li>
+          <li>Your name</li>
+        </ul>
+      </div>
+
+      <div class="info">
+        <h2>Why are those passwords weak?</h2>
+        <ul>
+          <li>They're easy to guess or crack.</li>
+          <li>If one of your logins is compromised, a hacker can access all your services.</li>
+        </ul>
+      </div>
+    </div>
   </main>
 
   <div id="clipboardAlert" class="alert success" role="status">Password copied to clipboard!</div>
